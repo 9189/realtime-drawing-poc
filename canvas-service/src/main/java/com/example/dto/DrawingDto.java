@@ -7,5 +7,5 @@ import java.util.List;
 
 @Data
 public class DrawingDto {
-    List<PointDto> points = new ArrayList<>();
+    List<LineDto> lines = new ArrayList<>();
 }

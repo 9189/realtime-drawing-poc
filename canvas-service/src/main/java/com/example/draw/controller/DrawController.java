@@ -19,12 +19,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @ApplicationScoped
 public class DrawController {
 
-    Map<String, Session> sessions = new ConcurrentHashMap<>();
+    Map<String, Session> rooms = new ConcurrentHashMap<>();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("room-id") String roomId) {
         // TODO: send full drawing
-        sessions.put(roomId, session);
+        rooms.put(roomId, session);
     }
 
     @OnClose
@@ -39,18 +39,15 @@ public class DrawController {
 
     @OnMessage
     public void onMessage(LineDto lineDto, @PathParam("room-id") String roomId) {
-
         // TODO: save line
-        broadcastToRoom(lineDto);
+        broadcast(lineDto, roomId);
     }
 
-    private void broadcastToRoom(LineDto lineDto) {
-        sessions.values().forEach(session -> {
-            session.getAsyncRemote().sendObject(lineDto, result -> {
-                if (result.getException() != null) {
-                    System.out.println("Unable to send message: " + result.getException());
-                }
-            });
+    private void broadcast(LineDto lineDto, String roomId) {
+        rooms.get(roomId).getOpenSessions().forEach(session -> {
+            if (session.isOpen()) {
+                session.getAsyncRemote().sendObject(lineDto);
+            }
         });
     }
 }

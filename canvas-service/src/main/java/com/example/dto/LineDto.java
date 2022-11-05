@@ -6,5 +6,6 @@ import java.util.List;
 
 @Data
 public class LineDto {
-    private List<PointDto> line;
+    private PointDto startingPoint;
+    private PointDto endPoint;
 }
